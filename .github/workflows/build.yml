@@ -1,4 +1,4 @@
-name: Build AN758x U-Boot
+﻿name: Build AN758x U-Boot
 
 on:
   push:
@@ -27,6 +27,7 @@ jobs:
           - xg-040g-tf
           - xg-040g-mf
           - hm2004-du
+          - hg5380a
 
     steps:
       - uses: actions/checkout@v4
