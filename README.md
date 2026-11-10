@@ -24,6 +24,8 @@ Hold Reset about one second after power-on to enter Web recovery.
 | `xg-040g-md` | Nokia XG-040G-MD | AN7581 | SPI NAND |
 | `xg-040g-tf` | Nokia XG-040G-TF | AN7581 | SPI NAND |
 | `xg-040g-mf` | Nokia XG-040G-MF | AN7583 | SPI NAND |
+| `hg5380a` | FiberHome HG5380A | AN7583 | SPI NAND |
+| `hg5580a` | FiberHome HG5580A | AN7583 | SPI NAND |
 
 ## Build / 构建
 
@@ -36,6 +38,37 @@ export BUILD_JOBS=$(nproc)
 ./scripts/build-an758x.sh hg5585f-ct
 ```
 Artifacts are written to `output/<target>/` / 产物位于 `output/<target>/`
+
+## Board notes / 机型笔记
+
+Two AN7583 boards share one mainboard and an identical 10-partition flash
+layout. They differ only in the optical front end and in which SPI-NAND part a
+production batch happens to carry.
+
+AN7583 的两块板子共用同一主板和完全一致的 10 分区闪存布局，差异只在光模块，
+以及生产批次所用的 SPI-NAND 型号。
+
+| Document | Contents |
+| --- | --- |
+| [docs/hg5580a-porting-notes.md](docs/hg5580a-porting-notes.md) | 5580A measured data, partition table, stock-env traps, flashing order, safety boundaries |
+| [docs/flash-skyhigh-vs-foresee.md](docs/flash-skyhigh-vs-foresee.md) | SkyHigh S35ML02G300 vs FORESEE F35SQB002G: OOB size, ECC layout, driver support, why `OOB available: 0` is misleading |
+| [docs/flashing-guide.md](docs/flashing-guide.md) | Step-by-step install for both boards, XMODEM recovery, rollback |
+
+### Flash part / 闪存型号
+
+| Part | Mfr ID | Dev ID | Page | OOB | Notes |
+| --- | --- | --- | --- | --- | --- |
+| SkyHigh S35ML02G300 | `0x01` | `0x25` | 2048 | 128 | ECC in hidden area, 126 OOB bytes free |
+| FORESEE F35SQB002G | `0xCD` | see note | 2048 | 64 | `OOB available: 0` in the stock driver; UBI works regardless |
+
+Device ID for the FORESEE part is not in either support table yet (BL2 lists
+`0xA1`/`0xA2`/`0xB2`, U-Boot lists `0x71`/`0x72`). The stock firmware runs UBI
+on it, so BL2 resolves it; verify U-Boot resolves it too by booting from RAM
+before flashing BL2.
+
+FORESEE 的器件 ID 目前不在任何一张支持表里（BL2 列的是 `0xA1`/`0xA2`/`0xB2`，
+U-Boot 列的是 `0x71`/`0x72`）。原厂固件在这颗芯片上跑 UBI，说明 BL2 能识别；
+U-Boot 侧是否识别，需要在刷 BL2 之前先用内存启动验证。
 
 ## Installation / 刷入
 
