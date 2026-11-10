@@ -163,12 +163,20 @@
 		/*
 		 * The one partition U-Boot formats and manages (104 MiB).
 		 *
-		 * Labelled "apps" to match the vendor layout and the HG5380A
-		 * target, so both boards share the same UBI volume set and the
-		 * same recovery environment.
+		 * The label MUST be "ubi": U-Boot finds the UBI container by name
+		 * via get_mtd_device_nm(), and three places hardcode that name:
+		 *
+		 *   env/Kconfig:704          CONFIG_ENV_UBI_PART default "ubi"
+		 *   include/env/.../an758x-ubi.env   ubi_mount=ubi part ubi
+		 *   net/lwip/httpd.c:45      #define HTTPD_UBI_PART "ubi"
+		 *
+		 * Naming it "apps" (the vendor's label, which is what /proc/mtd
+		 * shows on the stock firmware) makes all three fail with
+		 * "Partition ubi not found!", which is the bug currently present
+		 * on the hg5380a target.
 		 */
 		partition@5f00000 {
-			label = "apps";
+			label = "ubi";
 			reg = <0x5f00000 0x6800000>;
 		};
 
