@@ -1,11 +1,11 @@
-﻿#!/bin/sh
+#!/bin/sh
 
 set -eu
 
 usage()
 {
 	cat >&2 <<'EOF'
-usage: build-an758x.sh <hg5380a|hg5580a|hg5382a|hg5585f-ct|hg5585f-cu|hm2004-du|xg2010g|xr1710g|zn504xg-d|zn515xg-d|ung00a|xg-040g-md|xg-040g-tf|xg-040g-mf>
+usage: build-an758x.sh <hg5580a|hg5382a|hg5585f-ct|hg5585f-cu|hm2004-du|xg2010g|xr1710g|zn504xg-d|zn515xg-d|ung00a|xg-040g-md|xg-040g-tf|xg-040g-mf>
 
 Required environment:
   CROSS_COMPILE         AArch64 toolchain prefix
@@ -108,30 +108,15 @@ xg-040g-tf)
 	soc=EN7581
 	parallel_nand=0
 	;;
+hg5580a)
+	defconfig=an7583_fiberhome_hg5580a_defconfig
+	artifact_prefix=an7583-fiberhome-hg5580a
+	soc=AN7583
+	parallel_nand=0
+	;;
 xg-040g-mf)
 	defconfig=an7583_nokia_xg-040g-mf_defconfig
 	artifact_prefix=an7583-nokia-xg-040g-mf
-	soc=AN7583
-	parallel_nand=0
-	;;
-hg5380a)
-	defconfig=an7583_fiberhome_hg5380a_defconfig
-	artifact_prefix=an7583-fiberhome-hg5380a
-	soc=AN7583
-	parallel_nand=0
-	;;
-hg5580a)
-	# Same board as hg5380a: identical 10-partition flash layout and the same
-	# SoC.  The differences that matter are the optical front end (UX3363
-	# paged BOSA here, EN7572 on hg5380a) and the console UART base
-	# (0x1fbf0000 here, 0x11002000 there).
-	#
-	# The SPI-NAND part varies by production batch: FORESEE F35SQB002G on the
-	# units seen so far, SkyHigh S35ML02G300 on earlier ones.  Both are
-	# resolved at runtime by drivers/mtd/nand/spi, so nothing here depends on
-	# which one is fitted.  See docs/flash-skyhigh-vs-foresee.md.
-	defconfig=an7583_fiberhome_hg5580a_defconfig
-	artifact_prefix=an7583-fiberhome-hg5580a
 	soc=AN7583
 	parallel_nand=0
 	;;
