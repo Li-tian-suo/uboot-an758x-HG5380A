@@ -73,6 +73,34 @@ static int f35sqa002g_ecc_get_status(struct spinand_device *spinand, u8 status)
 }
 
 static const struct spinand_info foresee_spinand_table[] = {
+	/*
+	 * FiberHome HG5580A production batch.  Raw ID reported by the chip is
+	 * "cd 52 52": manufacturer 0xCD is FORESEE, device 0x52 was missing
+	 * from this table, which is why the board logged
+	 *
+	 *   spi_nand nand@0: unknown raw ID cd 52 52 cd
+	 *
+	 * and never registered the NAND device.
+	 *
+	 * Geometry matches the F35SQA002G above: 2 KiB page, 64-byte OOB,
+	 * 2048 blocks of 128 KiB = 256 MiB.  The stock U-Boot on the same board
+	 * reports 0xee00000 bytes (238 MiB) addressable, which is consistent
+	 * with 2048 blocks once the vendor's reserved area is excluded.
+	 *
+	 * Reusing f35sqa002g_ooblayout / f35sqa002g_ecc_get_status is
+	 * deliberate: both describe page/OOB layout and status-bit decoding for
+	 * this FORESEE family, not a specific die.
+	 */
+	SPINAND_INFO("F35SQB002G",
+		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x52, 0x52),
+		     NAND_MEMORG(1, 2048, 64, 64, 2048, 40, 1, 1, 1),
+		     NAND_ECCREQ(1, 512),
+		     SPINAND_INFO_OP_VARIANTS(&read_cache_variants,
+					      &write_cache_variants,
+					      &update_cache_variants),
+		     SPINAND_HAS_QE_BIT,
+		     SPINAND_ECCINFO(&f35sqa002g_ooblayout,
+				     f35sqa002g_ecc_get_status)),
 	SPINAND_INFO("F35SQA002G",
 		     SPINAND_ID(SPINAND_READID_METHOD_OPCODE_DUMMY, 0x72, 0x72),
 		     NAND_MEMORG(1, 2048, 64, 64, 2048, 40, 1, 1, 1),
