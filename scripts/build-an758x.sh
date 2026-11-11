@@ -5,7 +5,7 @@ set -eu
 usage()
 {
 	cat >&2 <<'EOF'
-usage: build-an758x.sh <hg5580a|hg5382a|hg5585f-ct|hg5585f-cu|hm2004-du|xg2010g|xr1710g|zn504xg-d|zn515xg-d|ung00a|xg-040g-md|xg-040g-tf|xg-040g-mf>
+usage: build-an758x.sh <hg5580a|hg5380a|hg5382a|hg5585f-ct|hg5585f-cu|hm2004-du|xg2010g|xr1710g|zn504xg-d|zn515xg-d|ung00a|xg-040g-md|xg-040g-tf|xg-040g-mf>
 
 Required environment:
   CROSS_COMPILE         AArch64 toolchain prefix
@@ -111,6 +111,16 @@ xg-040g-tf)
 hg5580a)
 	defconfig=an7583_fiberhome_hg5580a_defconfig
 	artifact_prefix=an7583-fiberhome-hg5580a
+	soc=AN7583
+	parallel_nand=0
+	;;
+hg5380a)
+	# HG5380A 与 HG5580A 同一颗 AN7583，defconfig 只有板名、prompt、
+	# DTS、以及 2.5G PHY 驱动不同：
+	#   HG5580A  YT8821   @MDIO 0x07
+	#   HG5380A  EN8811H  @MDIO 0x0f   -> CONFIG_PHY_AIROHA_EN8811
+	defconfig=an7583_fiberhome_hg5380a_defconfig
+	artifact_prefix=an7583-fiberhome-hg5380a
 	soc=AN7583
 	parallel_nand=0
 	;;
